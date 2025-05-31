@@ -1,129 +1,380 @@
-# 🧋 Overview
+# 🧋 Bubble Tea Bot Development Guide
 
-BubbleTea provides a beautiful chatbot frontend interface. Developers can integrate their AI chatbot backends by implementing our simple API schema and get a professionally designed chatbot UI hosted on BubbleTea.
+Learn how to create AI chatbots compatible with the **Bubble Tea** platform using our component-based schema system.
 
-## 🚀 Documentation Features
+## 🎯 Overview
 
-### 📍 Navigation Sections
-- **Integration Process** - Step-by-step guide to get started
-- **API Schema** - Complete request/response reference
-- **Streaming** - Real-time streaming implementation
-- **Examples** - Working code in FastAPI, Express, Flask
+Bubble Tea uses a simple, flexible component system that lets you build rich, interactive chatbot responses. Instead of plain text, you can send structured components like text, images, and markdown that render beautifully in the frontend.
 
-## 🎯 Integration Process
+## 📋 Component Types
 
-1. **Build your API** - Implement the required schema in your framework
-2. **Sign up at BubbleTea** - Create account and start onboarding on https://bubbletea.chat/bt
-4. **Connect & deploy** - Provide your API URL to get dedicated chatbot UI
+### 1. Text Component
+```json
+{
+  "type": "text",
+  "content": "Hello! This is a text component."
+}
+```
 
+### 2. Image Component  
+```json
+{
+  "type": "image",
+  "url": "https://example.com/image.jpg",
+  "alt": "Optional alt text"
+}
+```
 
-## 🔧 API Integration Requirements
+### 3. Markdown Component
+```json
+{
+  "type": "markdown", 
+  "content": "# Heading\n\n**Bold text** and `code`"
+}
+```
 
-### Request Format
-All chatbot APIs must accept POST requests to your bot API url:
+### 4. Done Component (Streaming Only)
+```json
+{
+  "type": "done"
+}
+```
+
+## 🔄 Request/Response Format
+
+### Request Schema
+All bot APIs must accept this request format:
 
 ```json
 {
-  "messages": [
-    {
-      "role": "user", 
-      "content": "Hello!"
-    }
+  "type": "user",
+  "message": "User's message here"
+}
+```
+
+### Response Schemas
+
+#### Non-Streaming Response
+```json
+{
+  "responses": [
+    { "type": "text", "content": "Hello!" },
+    { "type": "image", "url": "https://example.com/cat.jpg", "alt": "Cat" },
+    { "type": "markdown", "content": "## Markdown\n\nWith **formatting**" }
   ]
 }
 ```
 
-### Non-Streaming Response should be in the following format:
-
-```json
-{
-  "choices": [
-    {
-      "index": 0,
-      "message": {
-        "role": "assistant",
-        "content": "Hello! How can I help you today?"
-      },
-      "finish_reason": "stop"
-    }
-  ]
-}
+#### Streaming Response (Server-Sent Events)
+```
+data: { "type": "text", "content": "Hello" }
+data: { "type": "text", "content": " there!" }
+data: { "type": "image", "url": "https://example.com/image.jpg" }
+data: { "type": "done" }
 ```
 
-### Streaming Response
-```
-data: {"choices":[{"delta":{"content":"Hello"}, "finish_reason":null}}]}
-data: {"choices":[{"delta":{"content":"! How"}, "finish_reason":null}}]}
-data: {"choices":[{"delta":{"content":" can I help?"}, "finish_reason":null}}]}
-data: [DONE]
-```
-## Examples
+## 🤖 Bot Examples
 
-### Non-Streaming Bot Example (FastAPI)
+### Example 1: Simple Text Bot (Non-Streaming)
 
 ```python
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
 from pydantic import BaseModel
-from typing import List
+from typing import List, Literal
+
+class ComponentChatRequest(BaseModel):
+    type: Literal["user"]
+    message: str
+
+class TextComponent(BaseModel):
+    type: Literal["text"]
+    content: str
+
+class ComponentChatResponse(BaseModel):
+    responses: List[TextComponent]
 
 app = FastAPI()
 
-class Message(BaseModel):
-    role: str
-    content: str
-
-class ChatRequest(BaseModel):
-    messages: List[Message]
-
-@app.post("/chat/completions")
-async def echo_chat(request: ChatRequest):
-    content_text = request.messages[0].content
-
-    formatted_response = {
-        "choices": [{
-            "index": 0,
-            "message": {
-                "role": "assistant",
-                "content": f"Echo: {content_text}",
-            },
-            "finish_reason": "stop",
-        }]
-    }
-
-    return JSONResponse(content=formatted_response)
+@app.post("/chat")
+async def simple_text_bot(request: ComponentChatRequest):
+    responses = [
+        TextComponent(type="text", content=f"You said: {request.message}"),
+        TextComponent(type="text", content="This is a simple text response!")
+    ]
+    return ComponentChatResponse(responses=responses)
 ```
 
-### Streaming Bot Example  (FastAPI)
-```python
+### Example 2: Streaming Text Bot
 
-from fastapi import FastAPI
+```python
 from fastapi.responses import StreamingResponse
-from pydantic import BaseModel
-from typing import List
+import asyncio
 
-app = FastAPI()
+class DoneComponent(BaseModel):
+    type: Literal["done"]
 
-class Message(BaseModel):
-    role: str
+@app.post("/chat")
+async def streaming_text_bot(request: ComponentChatRequest):
+    async def stream_response():
+        words = ["Hello", "from", "streaming", "bot!"]
+        
+        for word in words:
+            component = TextComponent(type="text", content=f"{word} ")
+            yield f"data: {component.json()}\n\n"
+            await asyncio.sleep(0.5)
+        
+        # Send done signal
+        done_component = DoneComponent(type="done")
+        yield f"data: {done_component.json()}\n\n"
+    
+    return StreamingResponse(stream_response(), media_type="text/event-stream")
+```
+
+### Example 3: Mixed Content Bot (Non-Streaming)
+
+```python
+from typing import Union, Optional
+
+class ImageComponent(BaseModel):
+    type: Literal["image"]
+    url: str
+    alt: Optional[str] = None
+
+class MarkdownComponent(BaseModel):
+    type: Literal["markdown"]
     content: str
 
-class ChatRequest(BaseModel):
-    messages: List[Message]
+# Union type for mixed responses
+Component = Union[TextComponent, ImageComponent, MarkdownComponent]
 
-def fake_stream_response(content: str):
-    # Simulates streaming response word by word
-    async def generator():
-        for word in content.split():
-            yield f'data: {{"choices":[{{"delta":{{"content":"{word}"}}}}]}}\n'
-    return generator()
+class ComponentChatResponse(BaseModel):
+    responses: List[Component]
 
-@app.post("/chat/completions")
-async def chat_completions(request: ChatRequest):
-    user_input = request.messages[0].content
-    return StreamingResponse(
-        fake_stream_response(f"Echo: {user_input}"),
-        media_type="text/event-stream",
-    )
+@app.post("/chat")
+async def mixed_content_bot(request: ComponentChatRequest):
+    responses = [
+        TextComponent(
+            type="text", 
+            content="Here's a mixed content response!"
+        ),
+        ImageComponent(
+            type="image",
+            url="https://picsum.photos/400/300", 
+            alt="Random image"
+        ),
+        MarkdownComponent(
+            type="markdown",
+            content=f"""
+## Your Message
+You said: **{request.message}**
 
+### Features:
+- ✅ Text components
+- ✅ Image components  
+- ✅ Markdown components
+
+```python
+# Example code block
+def hello():
+    return "world"
 ```
+            """.strip()
+        ),
+        TextComponent(
+            type="text",
+            content="That's all! 🎉"
+        )
+    ]
+    return ComponentChatResponse(responses=responses)
+```
+
+### Example 4: Streaming Mixed Content Bot
+
+```python
+@app.post("/chat")
+async def streaming_mixed_bot(request: ComponentChatRequest):
+    async def stream_response():
+        # Send text
+        text_component = TextComponent(type="text", content="Loading response...")
+        yield f"data: {text_component.json()}\n\n"
+        await asyncio.sleep(1)
+        
+        # Send image
+        image_component = ImageComponent(
+            type="image",
+            url="https://picsum.photos/400/300",
+            alt="Streamed image"
+        )
+        yield f"data: {image_component.json()}\n\n"
+        await asyncio.sleep(1)
+        
+        # Send markdown
+        markdown_component = MarkdownComponent(
+            type="markdown",
+            content=f"## Response\n\nYou asked: **{request.message}**"
+        )
+        yield f"data: {markdown_component.json()}\n\n"
+        await asyncio.sleep(1)
+        
+        # Send final text
+        final_text = TextComponent(type="text", content="Streaming complete!")
+        yield f"data: {final_text.json()}\n\n"
+        
+        # Send done signal
+        done_component = DoneComponent(type="done")
+        yield f"data: {done_component.json()}\n\n"
+    
+    return StreamingResponse(stream_response(), media_type="text/event-stream")
+```
+
+## 🌐 Other Frameworks
+
+### Express.js (Node.js)
+
+```javascript
+const express = require('express');
+const app = express();
+
+app.post('/chat', (req, res) => {
+  const { message } = req.body;
+  
+  res.json({
+    responses: [
+      { type: 'text', content: `You said: ${message}` },
+      { 
+        type: 'image', 
+        url: 'https://picsum.photos/400/300',
+        alt: 'Random image'
+      },
+      {
+        type: 'markdown',
+        content: '## Hello from Express!\n\nThis is **markdown** content.'
+      }
+    ]
+  });
+});
+```
+
+### Flask (Python)
+
+```python
+from flask import Flask, request, jsonify
+
+app = Flask(__name__)
+
+@app.route('/chat', methods=['POST'])
+def chat():
+    data = request.json
+    message = data['message']
+    
+    return jsonify({
+        'responses': [
+            {'type': 'text', 'content': f'You said: {message}'},
+            {'type': 'text', 'content': 'Hello from Flask!'}
+        ]
+    })
+```
+
+## 🧪 Testing Your Bot
+
+### 1. Test Non-Streaming Response
+```bash
+curl -X POST "http://localhost:8000/chat" \
+  -H "Content-Type: application/json" \
+  -d '{"type": "user", "message": "Hello bot!"}'
+```
+
+### 2. Test Streaming Response
+```bash
+curl -X POST "http://localhost:8000/chat" \
+  -H "Content-Type: application/json" \
+  -H "Accept: text/event-stream" \
+  -d '{"type": "user", "message": "Stream me something!"}'
+```
+
+## 📝 Schema Validation
+
+### Pydantic Models (Python)
+```python
+from pydantic import BaseModel
+from typing import List, Optional, Union, Literal
+
+class TextComponent(BaseModel):
+    type: Literal["text"]
+    content: str
+
+class ImageComponent(BaseModel):
+    type: Literal["image"]
+    url: str
+    alt: Optional[str] = None
+
+class MarkdownComponent(BaseModel):
+    type: Literal["markdown"]
+    content: str
+
+class DoneComponent(BaseModel):
+    type: Literal["done"]
+
+Component = Union[TextComponent, ImageComponent, MarkdownComponent, DoneComponent]
+
+class ComponentChatRequest(BaseModel):
+    type: Literal["user"]
+    message: str
+
+class ComponentChatResponse(BaseModel):
+    responses: List[Component]
+```
+
+### TypeScript Types
+```typescript
+type TextComponent = {
+  type: 'text';
+  content: string;
+};
+
+type ImageComponent = {
+  type: 'image';
+  url: string;
+  alt?: string;
+};
+
+type MarkdownComponent = {
+  type: 'markdown';
+  content: string;
+};
+
+type DoneComponent = {
+  type: 'done';
+};
+
+type Component = TextComponent | ImageComponent | MarkdownComponent | DoneComponent;
+
+type ChatRequest = {
+  type: 'user';
+  message: string;
+};
+
+type ChatResponse = {
+  responses: Component[];
+};
+```
+
+## 🚀 Deployment Tips
+
+1. **Ensure CORS is enabled** for cross-origin requests
+2. **Set proper content-type headers** (`application/json` for non-streaming, `text/event-stream` for streaming)
+3. **Handle errors gracefully** - return proper error components
+4. **Test both streaming and non-streaming** modes
+5. **Validate request/response schemas** before deployment
+
+## 🔗 Integration
+
+Once your bot is ready:
+1. Deploy it to any hosting platform
+2. Register it with Bubble Tea using your API URL
+3. Test the integration through the Bubble Tea interface
+4. Your bot will be available for users!
+
+---
+
+**Ready to build amazing chatbots?** Start with one of the examples above and customize it for your use case! 🧋
