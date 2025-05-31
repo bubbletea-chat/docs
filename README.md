@@ -67,8 +67,8 @@ All bot APIs must accept this request format:
 
 #### Streaming Response (Server-Sent Events)
 ```
-data: { "type": "text", "content": "Hello" }
-data: { "type": "text", "content": " there!" }
+data: { "type": "text", "content": "Hello there!" }
+data: { "type": "text", "content": "How are you?" }
 data: { "type": "image", "url": "https://example.com/image.jpg" }
 data: { "type": "done" }
 ```
@@ -116,10 +116,11 @@ class DoneComponent(BaseModel):
 @app.post("/chat")
 async def streaming_text_bot(request: ComponentChatRequest):
     async def stream_response():
-        words = ["Hello", "from", "streaming", "bot!"]
-        
-        for word in words:
-            component = TextComponent(type="text", content=f"{word} ")
+
+        # logic / llm calls
+
+        for stream in your_stream:
+            component = TextComponent(type="text", content=f"{stream} ")
             yield f"data: {component.json()}\n\n"
             await asyncio.sleep(0.5)
         
@@ -177,8 +178,7 @@ You said: **{request.message}**
 # Example code block
 def hello():
     return "world"
-```
-            """.strip()
+```""".strip()
         ),
         TextComponent(
             type="text",
@@ -253,26 +253,6 @@ app.post('/chat', (req, res) => {
     ]
   });
 });
-```
-
-### Flask (Python)
-
-```python
-from flask import Flask, request, jsonify
-
-app = Flask(__name__)
-
-@app.route('/chat', methods=['POST'])
-def chat():
-    data = request.json
-    message = data['message']
-    
-    return jsonify({
-        'responses': [
-            {'type': 'text', 'content': f'You said: {message}'},
-            {'type': 'text', 'content': 'Hello from Flask!'}
-        ]
-    })
 ```
 
 ## 🧪 Testing Your Bot
@@ -358,23 +338,5 @@ type ChatResponse = {
   responses: Component[];
 };
 ```
-
-## 🚀 Deployment Tips
-
-1. **Ensure CORS is enabled** for cross-origin requests
-2. **Set proper content-type headers** (`application/json` for non-streaming, `text/event-stream` for streaming)
-3. **Handle errors gracefully** - return proper error components
-4. **Test both streaming and non-streaming** modes
-5. **Validate request/response schemas** before deployment
-
-## 🔗 Integration
-
-Once your bot is ready:
-1. Deploy it to any hosting platform
-2. Register it with Bubble Tea using your API URL
-3. Test the integration through the Bubble Tea interface
-4. Your bot will be available for users!
-
----
 
 **Ready to build amazing chatbots?** Start with one of the examples above and customize it for your use case! 🧋
