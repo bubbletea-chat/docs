@@ -1,0 +1,10 @@
+# Core dependencies for BubbleTea minimal package testing
+fastapi>=0.100.0
+uvicorn>=0.23.0
+pydantic>=2.0.0
+
+# Testing dependencies
+requests>=2.28.0
+
+# Development dependencies (optional)
+pytest>=7.0.0
