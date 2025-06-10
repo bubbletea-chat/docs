@@ -6,15 +6,7 @@ import sys
 import os
 import random
 
-# Add BubbleTea package to path
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', '..', '..', 'bubbletea'))
-
-try:
-    import bubbletea as bt
-except ImportError as e:
-    print(f"❌ Failed to import BubbleTea: {e}")
-    print("Make sure the bubbletea package is available")
-    sys.exit(1)
+import bubbletea_chat as bt
 
 # Sample images for testing
 SAMPLE_IMAGES = [
@@ -91,4 +83,4 @@ if __name__ == "__main__":
     print("Server: http://localhost:8000")
     print("Test: curl -X POST 'http://localhost:8000/chat' -H 'Content-Type: application/json' -d '{\"type\": \"user\", \"message\": \"Hello echo bot!\"}'")
     
-    bt.run_server(echo_bot, port=8000)
+    bt.run_server(echo_bot, port=8009)
