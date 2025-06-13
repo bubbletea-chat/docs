@@ -23,6 +23,19 @@ These examples demonstrate how to use various LLM providers with BubbleTea in no
 - Advanced assistants (researcher, writer, tutor, debate)
 - Complex reasoning and multi-perspective analysis
 
+### 📸 Vision/Multimodal Bots
+
+#### **Vision Bot** (`vision-bot/`)
+- Image analysis with GPT-4V, Claude 3, Gemini Vision
+- Multiple specialized vision bots:
+  - General vision assistant
+  - Screenshot analyzer (with code generation)
+  - Document reader (OCR)
+  - Chart interpreter
+  - Multi-image comparison
+  - Accessibility checker
+- Supports URL and base64 images
+
 ### 🔊 Basic Bot Example
 
 #### **Echo Bot** (`echo-bot/`)
@@ -101,6 +114,8 @@ Use these examples as templates:
 - ✅ Specialized bot personalities
 - ✅ Multi-component responses
 - ✅ System prompts and context
+- ✅ Vision/multimodal capabilities
+- ✅ Image analysis (URL and base64)
 - ✅ Error handling
 - ✅ Environment variables
 
