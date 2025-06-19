@@ -1,126 +1,310 @@
-# BubbleTea Sample Bots
+# BubbleTea
 
-A collection of example bots demonstrating various features and integrations with the BubbleTea framework.
+[![Python 3.9+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/platform-bubbletea.chat-purple.svg)](https://bubbletea.chat)
 
-## Available Examples
+> Platform for Developers
 
-### 🤖 LLM-Powered Bots (Non-Streaming)
+**The Frontend Platform for AI Agents & Chatbots**
 
-These examples demonstrate how to use various LLM providers with BubbleTea in non-streaming mode:
+Share your AI creations with the world through beautiful, instant chat interfaces.
 
-#### 1. **OpenAI GPT Bots** (`openai-bot/`)
-- Multiple GPT models (GPT-4, GPT-3.5-turbo)
-- Specialized assistants (code helper, multi-response)
-- Complete responses without streaming
+---
 
-#### 2. **Google Gemini Bots** (`gemini-bot/`)
-- Gemini Pro and Flash models
-- Specialized personalities (analyst, educator, creative)
-- Educational content with visual aids
+## Table of Contents
 
-#### 3. **Anthropic Claude Bots** (`claude-bot/`)
-- Claude 3 models (Opus, Sonnet, Haiku)
-- Advanced assistants (researcher, writer, tutor, debate)
-- Complex reasoning and multi-perspective analysis
+- [Overview](#overview)
+- [How to Use](#how-to-use)
+- [Types of Bots](#types-of-bots)
+- [Developer Tools](#developer-tools)
+- [Examples](#examples)
 
-### 🔊 Basic Bot Example
+---
 
-#### **Echo Bot** (`echo-bot/`)
-- Simple echo functionality
-- Basic bot structure
-- Good starting point for beginners
+## Overview
 
-## Quick Start
+### What is BubbleTea?
 
-1. **Choose a bot example** from the directories above
-2. **Navigate to the bot directory**:
-   ```bash
-   cd openai-bot/  # or gemini-bot/, claude-bot/, echo-bot/
-   ```
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. **Set up API keys** (for LLM bots):
-   ```bash
-   # For OpenAI
-   export OPENAI_API_KEY=your-key-here
-   
-   # For Gemini
-   export GEMINI_API_KEY=your-key-here
-   
-   # For Claude
-   export ANTHROPIC_API_KEY=your-key-here
-   ```
-5. **Run the bot**:
-   ```bash
-   python bots/<bot_name>.py
-   ```
+BubbleTea is a frontend platform that gives your AI agents and chatbots a home on the web. Think of it as the "user interface layer" for AI - where developers can instantly share their creations with the world through beautiful, accessible chat interfaces.
 
-## LLM Bot Comparison
+### 🎯 Core Purpose
 
-| Provider | Models | Best For | Key Features |
-|----------|--------|----------|--------------|
-| OpenAI | GPT-4, GPT-3.5-turbo | General purpose, code | Wide ecosystem, function calling |
-| Gemini | Pro, Flash, 1.5 | Speed, multimodal | Fast responses, vision capabilities |
-| Claude | Opus, Sonnet, Haiku | Complex reasoning | Thoughtful responses, long context |
+- **Instant web interface for any AI bot** - Get a professional chat UI without writing frontend code
+- **Share bots via simple URLs** - Each bot gets its own public URL at `bubbletea.chat/your-bot-name`
+- **Unified chat experience for users** - Consistent, polished interface across all bots
+- **Conversation history & user dashboard** - Users can access all their chats in one place
 
-## Non-Streaming vs Streaming
+### 💡 Key Benefits
 
-The LLM examples use **non-streaming mode** (`@chatbot(stream=False)`), which means:
+- **No frontend development needed** - Focus on your bot's logic, not UI code
+- **Professional UI out of the box** - Mobile-friendly, accessible, and beautiful
+- **Focus on AI logic, not UI code** - Build in any language, deploy anywhere
+- **Built-in user management** - Authentication, sessions, and history handled for you
 
-### Advantages:
-- Complete response before display
-- Can process/format the full response
-- Multiple LLM calls in sequence
-- Better for short responses
+> **Note:** BubbleTea backend follows specific standards for bot integration. Check out the [Developer Tools](#developer-tools) section to learn about the API specifications and SDK.
 
-### When to Use:
-- Analysis requiring full context
-- Multi-step processing
-- Adding metadata after generation
-- Response post-processing
+### Bot Flow
 
-### Streaming Alternative:
-For streaming examples, check the main BubbleTea package examples which demonstrate real-time token streaming.
+Your bot connects to a foundational model, and probably contains some unique agentic functionality. It then connects to BubbleTea's API, which in turn, connects to a frontend.
 
-## Creating Your Own Bot
+### Who Benefits?
 
-Use these examples as templates:
+#### 🤖 For Bot Creators
+Build your AI bot in any language, host it anywhere, and BubbleTea provides the chat interface
 
-1. **Basic Structure** - Start with echo-bot
-2. **Add LLM** - Copy from any LLM example
-3. **Customize** - Modify prompts and behavior
-4. **Deploy** - Run locally or deploy to server
+#### 🌍 For End Users
+Access all your favorite AI bots in one place with a consistent, beautiful interface
 
-## Features Demonstrated
+#### 🛡️ Platform Benefits
+Secure authentication, conversation history, and a unified dashboard for all interactions
 
-- ✅ Non-streaming LLM responses
-- ✅ Multiple LLM providers (OpenAI, Gemini, Claude)
-- ✅ Different model variants
-- ✅ Specialized bot personalities
-- ✅ Multi-component responses
-- ✅ System prompts and context
-- ✅ Error handling
-- ✅ Environment variables
+---
 
-## Resources
+## How to Use
 
-- [BubbleTea Documentation](https://docs.bubbletea.dev)
-- [LiteLLM Documentation](https://docs.litellm.ai)
-- [API Key Setup Guides](#)
+### Getting Started with BubbleTea
 
-## Contributing
+Your journey from sign-up to sharing your first bot.
 
-Feel free to add your own bot examples! Follow the existing structure:
+#### 1️⃣ Sign Up with Email
+Enter your email address and we'll send you a verification code. No passwords needed!
+
+[Sign Up Now →](https://bubbletea.chat/)
+
+#### 2️⃣ Meet BT Agent - Your Bot Manager
+BT Agent is your AI assistant for managing bots. Use natural language to register, list, and manage your bots.
+
+Example commands:
+- `"List all available bots"`
+- `"Register my bot: weather-bot at http://myserver.com:8000/chat, streaming"`
+
+#### 3️⃣ Get Your Public URL
+Once registered, your bot gets a permanent public URL that you can share with anyone:
+
 ```
-your-bot/
-├── README.md
-├── requirements.txt
-└── bots/
-    └── your_bot.py
+https://bubbletea.chat/your-bot-name
 ```
 
-## License
+#### 4️⃣ Share & Track
+Share your bot URL with users. All conversations are saved, and users can access their chat history from their personal dashboard. Your bot will appear in their bot list for easy access.
 
-These examples are provided under the MIT License.
+### Using BT Agent
+
+BT Agent is your conversational interface for managing bots. Chat naturally to:
+
+#### Common Commands
+- `"List all bots"`
+- `"Show my registered bots"`
+- `"Register my bot: [bot-name] at [url], [streaming/non streaming]"`
+- `"Update my bot settings"`
+
+#### What Happens
+- Bot gets registered to your account
+- Receives public URL instantly
+- Appears in user dashboards
+- Conversations are tracked
+
+[Chat with BT Agent →](https://bubbletea.chat/bt-agent)
+
+---
+
+## Types of Bots
+
+### Types of Bots You Can Build
+
+BubbleTea supports any type of AI bot - from simple chatbots to complex AI agents.
+
+#### 💬 Conversational Assistants
+Build Q&A bots, customer support agents, or personal assistants that can understand context and provide helpful responses.
+
+**Examples:** FAQ bots, documentation assistants, language tutors
+
+#### ✨ Creative AI Tools
+Create bots that generate images, write stories, compose music, or help with creative projects.
+
+**Examples:** Image generators, story writers, code assistants
+
+#### ⚡ Task Automation Bots
+Automate workflows, integrate with APIs, or perform complex multi-step tasks through conversation.
+
+**Examples:** Data analysis bots, API integrators, workflow automators
+
+#### 🌐 Specialized Domain Experts
+Deploy bots with deep knowledge in specific fields like medicine, law, finance, or education.
+
+**Examples:** Medical advisors, legal assistants, financial analysts
+
+> **The best part?** You can build your bot in any language, using any framework. BubbleTea provides the chat interface so you can focus on your bot's unique capabilities.
+
+### Bot Capabilities
+
+#### What Your Bots Can Do
+- Process text, images, and files
+- Stream responses in real-time
+- Maintain conversation context
+- Integrate with external APIs
+
+#### Rich Response Types
+- Plain text and markdown
+- Images and media
+- Code blocks with syntax highlighting
+- Custom UI components
+
+---
+
+## Developer Tools
+
+### Tools for Building AI Bots & Agents
+
+Everything you need to create bots that seamlessly integrate with BubbleTea's frontend.
+
+These developer tools simplify the process of creating AI bots and agents that work perfectly with BubbleTea's chat interface. Build once, deploy anywhere, and let BubbleTea handle the user experience.
+
+### 📦 Python SDK
+
+Build powerful AI bots with our feature-rich Python SDK.
+
+#### 🚀 Quick Start
+
+```bash
+# Install the SDK
+pip install bubbletea-chat
+
+# Create your first bot
+from bubbletea_chat import bt
+
+@bt.chatbot
+async def my_bot(message: str):
+    yield bt.Text(f"You said: {message}")
+
+# Run the bot (creates /chat endpoint automatically)
+bt.run(my_bot, port=8000)
+```
+
+#### 🤖 LLM Integration
+
+```python
+from bubbletea_chat import LLM
+
+# Use any LLM provider
+llm = LLM(model="gpt-4")
+response = await llm.acomplete("Hello!")
+
+# Stream responses
+async for chunk in llm.stream("Tell me a story"):
+    yield bt.Text(chunk)
+```
+
+#### 📸 Vision & Media Support
+
+```python
+# Analyze images
+@bt.chatbot
+async def vision_bot(message: str, images: list = None):
+    if images:
+        llm = LLM(model="gpt-4-vision-preview")
+        response = await llm.acomplete_with_images(message, images)
+        yield bt.Text(response)
+
+# Generate images
+image_url = await llm.agenerate_image("A sunset")
+yield bt.Image(image_url)
+```
+
+> **Note:** The BT package automatically creates these endpoints for your bot:
+> - `/chat` - Main bot endpoint for BubbleTea integration
+> - `/docs` - Swagger API documentation
+>
+> When registering with BT Agent, provide your complete bot URL including the `/chat` endpoint (e.g., `https://my-bot-api.com/chat`).
+
+### 🤖 BT Agent - Bot Management
+
+Your AI assistant for registering and managing bots.
+
+BT Agent is a built-in conversational interface that helps you manage your bots without writing code.
+
+#### Common Commands
+- `"Register my bot at http://localhost:8000/chat"`
+- `"List all my bots"`
+- `"Update bot description"`
+
+#### Features
+- Natural language commands
+- Instant bot registration
+- Bot discovery and search
+
+[Try BT Agent →](https://bubbletea.chat/bt-agent)
+
+### 📚 Developer Resources
+
+#### Documentation
+- [API Reference](#)
+- [Tutorial Guide](#)
+- [Best Practices](#)
+
+#### Example Bots
+- [Echo Bot](https://github.com/bubbletea/examples)
+- [AI Assistant](https://github.com/bubbletea/examples)
+- [Image Generator](https://github.com/bubbletea/examples)
+
+[PyPI Package](https://pypi.org/project/bubbletea-chat/) | [GitHub](https://github.com/bubbletea)
+
+---
+
+## Examples
+
+### Example Bots
+
+Get inspired by these example implementations.
+
+#### 🎨 Image Generation Bot
+Generate images from text descriptions using DALL-E
+
+```python
+@bt.chatbot
+async def art_bot(prompt: str):
+    llm = LLM(model="dall-e-3")
+    image_url = await llm.agenerate_image(prompt)
+    yield bt.Image(image_url)
+    yield bt.Text("Your image is ready!")
+```
+
+#### 📚 Knowledge Assistant
+Answer questions using GPT-4 with streaming
+
+```python
+@bt.chatbot
+async def assistant(message: str):
+    llm = LLM(model="gpt-4")
+    yield bt.Text("Let me help you with that...")
+    
+    async for chunk in llm.stream(message):
+        yield bt.Text(chunk)
+```
+
+#### 👁️ Vision Analyzer
+Analyze images and answer questions about them
+
+```python
+@bt.chatbot
+async def vision_bot(message: str, images: list = None):
+    if images:
+        llm = LLM(model="gpt-4-vision-preview")
+        analysis = await llm.acomplete_with_images(message, images)
+        yield bt.Markdown(analysis)
+```
+
+[View More Examples →](https://github.com/bubbletea/examples)
+
+---
+
+## Ready to Build?
+
+Join developers building the next generation of AI assistants.
+
+[Get Started Free](https://bubbletea.chat/signup) | [Try BT Agent](https://bubbletea.chat/bt-agent)
+
+---
+
+Built with ❤️ by the Bubbletea team
