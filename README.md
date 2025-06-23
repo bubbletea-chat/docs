@@ -178,16 +178,45 @@ from bubbletea_chat import bt
 async def my_bot(message: str):
     yield bt.Text(f"You said: {message}")
 
-# Run the bot (creates /chat endpoint automatically)
-bt.run(my_bot, port=8000)
+```
+#### 🖥️ Server
+```
+if __name__ == "__main__":
+    # Run the server
+    bt.run_server(my_bot, port=8000)
+```
+- It will run the chatbot server on port 8000
+    - Automatically creates a /chat endpoint for your bot
+
+    - The /chat endpoint accepts POST requests with chat messages
+
+    - Supports both streaming and non-streaming responses
+
+
+
+## 🤖 LLM Integration
+
+#### 🔧 Environment Variables
+
+To use different LLM (Large Language Model) providers, set the appropriate API keys as environment variables:
+
+```bash
+# OpenAI
+export OPENAI_API_KEY=your-openai-api-key
+
+# Anthropic Claude
+export ANTHROPIC_API_KEY=your-anthropic-api-key
+
+# Google Gemini
+export GEMINI_API_KEY=your-gemini-api-key
 ```
 
-#### 🤖 LLM Integration
-
+#### 🧠 Using the LLM Module
 ```python
 from bubbletea_chat import LLM
 
 # Use any LLM provider
+# Make sure to set OPENAI_API_KEY environment variable
 llm = LLM(model="gpt-4")
 response = await llm.acomplete("Hello!")
 
@@ -203,6 +232,7 @@ async for chunk in llm.stream("Tell me a story"):
 @bt.chatbot
 async def vision_bot(message: str, images: list = None):
     if images:
+        # Make sure to set OPENAI_API_KEY environment variable
         llm = LLM(model="gpt-4-vision-preview")
         response = await llm.acomplete_with_images(message, images)
         yield bt.Text(response)
@@ -264,6 +294,7 @@ Generate images from text descriptions using DALL-E
 ```python
 @bt.chatbot
 async def art_bot(prompt: str):
+    # Make sure to set OPENAI_API_KEY environment variable
     llm = LLM(model="dall-e-3")
     image_url = await llm.agenerate_image(prompt)
     yield bt.Image(image_url)
@@ -276,6 +307,7 @@ Answer questions using GPT-4 with streaming
 ```python
 @bt.chatbot
 async def assistant(message: str):
+    # Make sure to set OPENAI_API_KEY environment variable
     llm = LLM(model="gpt-4")
     yield bt.Text("Let me help you with that...")
     
@@ -290,6 +322,7 @@ Analyze images and answer questions about them
 @bt.chatbot
 async def vision_bot(message: str, images: list = None):
     if images:
+        # Make sure to set OPENAI_API_KEY environment variable
         llm = LLM(model="gpt-4-vision-preview")
         analysis = await llm.acomplete_with_images(message, images)
         yield bt.Markdown(analysis)
